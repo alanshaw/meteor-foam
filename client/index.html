@@ -1,0 +1,21 @@
+<head>
+  <title>Million Photo Homepage</title>
+</head>
+
+<body>
+	{{> photoList}}
+	<div id="booth">
+		<video id="video" width="160" height="120" autoplay></video>
+		<button id="snap">Snap Photo</button>
+		<canvas id="canvas" width="160" height="120"></canvas>
+	</div>
+</body>
+
+<template name="photoList">
+	<ul id="photos">
+	{{#each photos}}
+		<li><img src="{{url}}"/></li>
+	{{/each}}
+	</ul>
+</template>
+

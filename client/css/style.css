@@ -1,0 +1,39 @@
+body {
+	background: #333;
+	margin: 0;
+	padding: 0;
+}
+#photos {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+#photos img {
+	float: left;
+	width: 160px;
+	-moz-transition: width 0.25s ease-in-out;
+	-o-transition: width 0.25s ease-in-out;
+	-webkit-transition: width 0.25s ease-in-out;
+	transition: width 0.25s ease-in-out;
+}
+#booth {
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	background: #000;
+	border: 1em solid #333;
+	width: 160px;
+	height: 120px;
+	margin: -65px 0 0 -85px;
+	box-shadow: 0 0 1em #000;
+}
+#booth button {
+	position: absolute;
+	bottom: -12px;
+	left: 42px;
+}
+#booth canvas {
+	position: absolute;
+	left: -999em;
+}

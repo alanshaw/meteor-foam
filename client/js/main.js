@@ -1,9 +1,9 @@
 Meteor.startup(function() {
 	
 	// Grab elements, create settings, etc.
-	var canvas = $('#canvas')[0],
+	var canvas = $('#booth canvas')[0],
 		context = canvas.getContext('2d'),
-		video = $('#video')[0],
+		video = $('#booth video')[0],
 		videoObj = {'video': true},
 		errBack = function(error) {
 			console.error('Video capture error', error.code); 
@@ -15,9 +15,15 @@ Meteor.startup(function() {
 			video.src = stream;
 			video.play();
 		}, errBack);
-	} else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
+	} else if(navigator.webkitGetUserMedia) {
 		navigator.webkitGetUserMedia(videoObj, function(stream){
 			video.src = window.webkitURL.createObjectURL(stream);
+			video.play();
+		}, errBack);
+	} else if(navigator.mozGetUserMedia) {
+		console.warn('Set media.navigator.enabled to true in about:config to make mozGetUserMedia work. If it is already working, woo for you.');
+		navigator.mozGetUserMedia(videoObj, function(stream){
+			video.src = window.URL.createObjectURL(stream);
 			video.play();
 		}, errBack);
 	}
@@ -42,7 +48,7 @@ Meteor.startup(function() {
 	}, 50);
 	
 	// Trigger photo take
-	$('#snap').click(function() {
+	$('#booth button').click(function() {
 		context.drawImage(video, 0, 0, 160, 120);
 		Photos.insert({url: canvas.toDataURL()});
 	});

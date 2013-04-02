@@ -1,5 +1,5 @@
 Meteor.publish('photos', function(limit) {
-	return findPhotos(limit);
+	return Photos.find({}, {limit: limit});
 });
 
 Meteor.methods({

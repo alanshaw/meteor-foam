@@ -1,32 +1,22 @@
 Meteor.startup(function() {
 	
-	// Grab elements, create settings, etc.
 	var canvas = $('#booth canvas')[0],
 		context = canvas.getContext('2d'),
-		video = $('#booth video')[0],
-		videoObj = {'video': true},
-		errBack = function(error) {
-			console.error('Video capture error', error.code); 
-		};
+		video = $('#booth video')[0];
 	
-	// Put video listeners into place
-	if(navigator.getUserMedia) { // Standard
-		navigator.getUserMedia(videoObj, function(stream) {
-			video.src = stream;
-			video.play();
-		}, errBack);
-	} else if(navigator.webkitGetUserMedia) {
-		navigator.webkitGetUserMedia(videoObj, function(stream){
-			video.src = window.webkitURL.createObjectURL(stream);
-			video.play();
-		}, errBack);
-	} else if(navigator.mozGetUserMedia) {
+	navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia
+	window.URL = window.URL || window.mozURL || window.webkitURL;
+	
+	if(navigator.mozGetUserMedia) {
 		console.warn('Set media.navigator.enabled to true in about:config to make mozGetUserMedia work. If it is already working, woo for you.');
-		navigator.mozGetUserMedia(videoObj, function(stream){
-			video.src = window.URL.createObjectURL(stream);
-			video.play();
-		}, errBack);
 	}
+	
+	navigator.getUserMedia({'video': true}, function(stream) {
+		video.src = window.URL.createObjectURL(stream);
+		video.play();
+	}, function(err) {
+		console.error('Video capture error', err); 
+	});
 	
 	// Get the total count of the photos on the server so we can begin retrieving them
 	Meteor.call('photosCount', function(err, count) {

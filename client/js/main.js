@@ -28,12 +28,40 @@ Meteor.startup(function() {
 		}, errBack);
 	}
 	
-	Deps.autorun(function() {
+	// Get the total count of the photos on the server so we can begin retrieving them
+	Meteor.call('photosCount', function(err, count) {
+		if(err) {
+			return console.error('failed to count the photos', err);
+		}
+		
+		// Retrieve photos in 25 item chunks
+		var limit = 25;
+		
+		(function bufferedSubscribe() {
+			
+			Meteor.subscribe('photos', limit, function() {
+				if(limit == 1000000) return;
+				
+				console.log('Got first ' + limit + ' photos!');
+				
+				if(limit < count) {
+					limit += 25;
+				} else {
+					limit = 1000000;
+				}
+				
+				bufferedSubscribe();
+			});
+			
+		})();
+	});
+	
+	/*Deps.autorun(function() {
 		
 		var count = Photos.find().count();
 		
 		// TODO: Intelligently tile the images
-	});
+	});*/
 	
 	// TODO: Temporary hack
 	setInterval(function() {
@@ -55,6 +83,6 @@ Meteor.startup(function() {
 });
 
 Template.photoList.photos = function() {
-	return Photos.find({});
+	return Photos.find();
 };
 

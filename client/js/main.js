@@ -63,19 +63,12 @@ Meteor.startup(function() {
 			
 		})();
 	});
-	
-	// TODO: Temporary hack
-	setInterval(function() {
-		var winWidth = $(window).width();
-		var winHeight = $(window).height();
-		
-		if($('#photos').height() > winHeight) {
-			var images = $('#photos img');
-			images.width(images.width() - 1);
-		}
-		
-	}, 50);
-	
+
+	// Do some d3 when the Photos collection changes.
+	Deps.autorun(function(){
+		renderPhotos();
+	});
+
 	// Trigger photo take
 	$('#booth button').click(function() {
 		context.drawImage(video, 0, 0, 160, 120);
@@ -83,7 +76,27 @@ Meteor.startup(function() {
 	});
 });
 
-Template.photoList.photos = function() {
-	return Photos.find();
-};
+function renderPhotos(){
+	var data = Photos.find().fetch();
+	var width = document.documentElement.clientWidth;
+	var height = document.documentElement.clientHeight;
+	
+	var area = width * height;
+	var photoArea = area / data.length;
+	var photoWidth = Math.floor(Math.sqrt(photoArea) * 1.3);
+	var photoHeight = Math.floor(Math.sqrt(photoArea) * 0.7);
 
+	console.log("Rendering", data.length, photoWidth, photoHeight);
+
+	var photos = d3.select('#photos');
+	
+	var viz = photos.selectAll("img").data(data, function(d){ return d._id});
+
+	viz.enter()
+		.append('img')
+		.attr('src', function(d) { return d.url });
+
+	viz
+		.attr('width', photoWidth)
+		.attr('height', photoHeight);
+}

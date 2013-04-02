@@ -3,19 +3,10 @@
 </head>
 
 <body>
-	{{> photoList}}
+	<div id="photos"></div>
 	<div id="booth">
 		<video width="160" height="120" autoplay></video>
 		<button>Snap Photo</button>
 		<canvas width="160" height="120"></canvas>
 	</div>
 </body>
-
-<template name="photoList">
-	<ul id="photos">
-	{{#each photos}}
-		<li><img src="{{url}}"/></li>
-	{{/each}}
-	</ul>
-</template>
-

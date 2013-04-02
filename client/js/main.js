@@ -34,8 +34,8 @@ Meteor.startup(function() {
 			return console.error('failed to count the photos', err);
 		}
 		
-		// Retrieve photos in 25 item chunks
-		var limit = 25;
+		// Retrieve photos in 5 item chunks
+		var limit = 5;
 		
 		(function bufferedSubscribe() {
 			
@@ -45,7 +45,7 @@ Meteor.startup(function() {
 				console.log('Got first ' + limit + ' photos!');
 				
 				if(limit < count) {
-					limit += 25;
+					limit += 5;
 				} else {
 					limit = 1000000;
 				}

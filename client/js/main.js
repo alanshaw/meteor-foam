@@ -36,32 +36,33 @@ Meteor.startup(function() {
 		
 		// Retrieve photos in 5 item chunks
 		var limit = 5;
+		var subscriptons = [];
 		
 		(function bufferedSubscribe() {
 			
-			Meteor.subscribe('photos', limit, function() {
-				if(limit == 1000000) return;
-				
-				console.log('Got first ' + limit + ' photos!');
-				
-				if(limit < count) {
-					limit += 5;
-				} else {
-					limit = 1000000;
-				}
-				
-				bufferedSubscribe();
-			});
+			subscriptons.push(
+				Meteor.subscribe('photos', limit, function() {
+					if(limit == 1000000) return;
+					
+					console.log('Got first ' + limit + ' photos!');
+					
+					if(limit < count) {
+						limit += 5;
+					} else {
+						limit = 1000000;
+					}
+					
+					bufferedSubscribe();
+					
+					// Remove the previous subscription
+					if(subscriptons.length) {
+						subscriptons.shift().stop();
+					}
+				})
+			);
 			
 		})();
 	});
-	
-	/*Deps.autorun(function() {
-		
-		var count = Photos.find().count();
-		
-		// TODO: Intelligently tile the images
-	});*/
 	
 	// TODO: Temporary hack
 	setInterval(function() {

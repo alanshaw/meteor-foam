@@ -10,7 +10,7 @@ body {
 }
 #photos img {
 	padding: 0;
-	margin: 0;
+	margin: -4px 0 0 0;
 	-moz-transition: width 0.25s ease-in-out;
 	-o-transition: width 0.25s ease-in-out;
 	-webkit-transition: width 0.25s ease-in-out;

@@ -83,8 +83,8 @@ function renderPhotos(){
 	
 	var area = width * height;
 	var photoArea = area / data.length;
-	var photoWidth = Math.floor(Math.sqrt(photoArea) * 1.3);
-	var photoHeight = Math.floor(Math.sqrt(photoArea) * 0.7);
+	var photoWidth = Math.floor(Math.sqrt(photoArea) * 1.33);
+	var photoHeight = Math.floor(Math.sqrt(photoArea) * 0.75);
 
 	console.log("Rendering", data.length, photoWidth, photoHeight);
 
@@ -96,7 +96,5 @@ function renderPhotos(){
 		.append('img')
 		.attr('src', function(d) { return d.url });
 
-	viz
-		.attr('width', photoWidth)
-		.attr('height', photoHeight);
+	viz.transition().attr('width', photoWidth).attr('height', photoHeight);
 }

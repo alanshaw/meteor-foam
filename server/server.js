@@ -16,7 +16,7 @@ Meteor.setInterval(function() {
 	
 	console.log('About to purge ' + deleteCount + ' photos');
 	
-	var photoIds = Photos.find({}, {limit: deleteCount, sort: [['created', 'desc']]}).map(function(photo) {
+	var photoIds = Photos.find({}, {limit: deleteCount, sort: [['created', 'asc']]}).map(function(photo) {
 		return photo._id;
 	});
 	
@@ -24,4 +24,4 @@ Meteor.setInterval(function() {
 		console.log(deleteCount + ' photos purged');
 	});
 	
-}, 60000);
+}, 60000 * 5);

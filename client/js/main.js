@@ -72,33 +72,44 @@ Meteor.startup(function() {
 	// Trigger photo take
 	$('#booth button').click(function() {
 		context.drawImage(video, 0, 0, 160, 120);
-		Photos.insert({url: canvas.toDataURL()});
+		Photos.insert({url: canvas.toDataURL(), created: new Date().getTime()});
 	});
 });
 
-function renderPhotos(){
-	var data = Photos.find().fetch();
+function renderPhotos() {
+	
+	var photos = Photos.find().fetch();
+	
+	if(!photos.length) return;
+	
 	var width = document.documentElement.clientWidth;
 	var height = document.documentElement.clientHeight;
 	
-	var area = width * height;
-	var photoArea = area / data.length;
+	var svg = d3.select('#photos svg')
+		.attr('width', width)
+		.attr('height', height);
 	
-	// The magic number is 12 because the photos are in 4:3 proportion
-	var multiplier = Math.floor(Math.sqrt(photoArea / 12));
+	var layout = d3.layout.pack().sort(d3.descending).size([width, height]);
 	
-	var photoWidth = 4 * multiplier;
-	var photoHeight = 3 * multiplier;
+	var data = photos.map(function(photo) {
+		return {_id: photo._id, url: photo.url, value: photo.created};
+	});
 	
-	console.log("Rendering", data.length, photoWidth, photoHeight);
-
-	var photos = d3.select('#photos');
+	var photo = svg.selectAll('.photo').data(layout.nodes({children: data}).filter(function(d) {return !d.children;}));
 	
-	var viz = photos.selectAll("img").data(data, function(d){ return d._id});
-
-	viz.enter()
-		.append('img')
-		.attr('src', function(d) { return d.url });
-
-	viz.transition().attr('width', photoWidth).attr('height', photoHeight);
+	var photoEnter = photo.enter()
+		.append('g')
+		.attr('class', 'photo')
+		.attr('transform', function(d) { return 'translate(' + width / 2 + ', ' + height / 2 + ')'; })
+	
+	photoEnter.append('image')
+		.attr('xlink:href', function(d) { return d.url; })
+		.attr('preserveAspectRatio', 'none');
+	
+	var photoUpdate = photo.transition()
+		.attr('transform', function(d) { return 'translate(' + d.x + ', ' + d.y + ')'; });
+	
+	photoUpdate.select('image')
+		.attr('width', function(d) { return d.r * 2; })
+		.attr('height', function(d) { return d.r * 2; });
 }

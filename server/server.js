@@ -7,3 +7,21 @@ Meteor.methods({
 		return Photos.find().count();
 	}
 });
+
+Meteor.setInterval(function() {
+	var count = Photos.find().count();
+	var deleteCount = count - 200;
+	
+	if(deleteCount <= 0) return;
+	
+	console.log('About to purge ' + deleteCount + ' photos');
+	
+	var photoIds = Photos.find({}, {limit: deleteCount, sort: [['created', 'desc']]}).map(function(photo) {
+		return photo._id;
+	});
+	
+	Photos.remove({_id: {$in: photoIds}}, function() {
+		console.log(deleteCount + ' photos purged');
+	});
+	
+}, 60000);

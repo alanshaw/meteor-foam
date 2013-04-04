@@ -83,9 +83,13 @@ function renderPhotos(){
 	
 	var area = width * height;
 	var photoArea = area / data.length;
-	var photoWidth = Math.floor(Math.sqrt(photoArea) * 1.33);
-	var photoHeight = Math.floor(Math.sqrt(photoArea) * 0.75);
-
+	
+	// The magic number is 12 because the photos are in 4:3 proportion
+	var multiplier = Math.floor(Math.sqrt(photoArea / 12));
+	
+	var photoWidth = 4 * multiplier;
+	var photoHeight = 3 * multiplier;
+	
 	console.log("Rendering", data.length, photoWidth, photoHeight);
 
 	var photos = d3.select('#photos');

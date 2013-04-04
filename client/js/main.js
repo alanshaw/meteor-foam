@@ -1,9 +1,10 @@
 Meteor.startup(function() {
 	
-	var canvas = $('#booth canvas')[0],
+	var booth = $('#booth'),
+		canvas = $('canvas', booth)[0],
 		context = canvas.getContext('2d'),
-		video = $('#booth video')[0],
-		button = $('#booth button');
+		video = $('video', booth)[0],
+		button = $('button', booth);
 	
 	navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia
 	window.URL = window.URL || window.mozURL || window.webkitURL;
@@ -12,10 +13,13 @@ Meteor.startup(function() {
 		console.warn('Set media.navigator.enabled to true in about:config to make mozGetUserMedia work. If it is already working, woo for you.');
 	}
 	
+	// Only show the booth when the user has accepted the consequences
+	booth.hide();
+	
 	navigator.getUserMedia({'video': true}, function(stream) {
 		video.src = window.URL.createObjectURL(stream);
 		video.play();
-		button.show();
+		booth.show();
 	}, function(err) {
 		console.error('Video capture error', err); 
 	});
@@ -28,8 +32,8 @@ Meteor.startup(function() {
 		
 		console.log(count, 'photos available');
 		
-		// Retrieve photos in 5 item chunks
-		var limit = 5;
+		// Retrieve photos in chunks
+		var limit = 1;
 		var subscriptons = [];
 		
 		(function bufferedSubscribe() {
@@ -41,7 +45,7 @@ Meteor.startup(function() {
 					console.log('Got first ' + limit + ' photos!');
 					
 					if(limit < count) {
-						limit += 5;
+						limit += 1;
 					} else {
 						limit = 1000000;
 					}
@@ -64,7 +68,7 @@ Meteor.startup(function() {
 	});
 
 	// Trigger photo take
-	button.hide().click(function() {
+	button.click(function() {
 		context.drawImage(video, 0, 0, 160, 120);
 		Photos.insert({url: canvas.toDataURL(), created: new Date().getTime()});
 	});

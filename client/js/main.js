@@ -82,19 +82,28 @@ function renderPhotos() {
 	var layout = d3.layout.pack().sort(d3.descending).size([width, height]);
 	
 	var data = photos.map(function(photo) {
-		return {_id: photo._id, url: photo.url, value: photo.created};
+		// Provide default created value for legacy photos, also divide by 1000000 because of https://github.com/mbostock/d3/issues/1075
+		return {_id: photo._id, url: photo.url, value: (photo.created || 1365080502355) / 1000000};
 	});
 	
-	var photo = svg.selectAll('.photo').data(layout.nodes({children: data}).filter(function(d) {return !d.children;}));
+	var photo = svg.selectAll('.photo')
+		.data(layout.nodes({children: data}).filter(function(d) {return !d.children;}), function(d) {return d._id;});
 	
 	var photoEnter = photo.enter()
 		.append('g')
 		.attr('class', 'photo')
 		.attr('transform', 'translate(' + (width / 2) + ', ' + (height / 2) + ')')
 	
+	/*
+	photoEnter.append('clipPath')
+		.attr('id', function(d) { return 'cp-' + d._id; })
+		.append('circle');
+	*/
+	
 	photoEnter.append('image')
 		.attr('xlink:href', function(d) { return d.url; })
-		.attr('preserveAspectRatio', 'none');
+		.attr('preserveAspectRatio', 'none')
+		.attr('clip-path', function(d) { return 'url(#cp-' + d._id + ')'; });
 	
 	var photoUpdate = photo.transition()
 		.attr('transform', function(d) { return 'translate(' + d.x + ', ' + d.y + ')'; });
@@ -102,6 +111,13 @@ function renderPhotos() {
 	photoUpdate.select('image')
 		.attr('width', function(d) { return d.r * 2; })
 		.attr('height', function(d) { return d.r * 2; });
+	
+	/*
+	photoUpdate.select('circle')
+		.attr('r', function(d){ return d.r; })
+		.attr('cx', function(d){ return d.r; })
+		.attr('cy', function(d){ return d.r; });
+	*/
 	
 	var photoExit = photo.exit()
 		.attr('transform', 'translate(' + (width / 2) + ', ' + (height / 2) + ')');

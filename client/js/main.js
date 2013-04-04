@@ -4,7 +4,6 @@ Meteor.startup(function() {
 		canvas = $('canvas', booth)[0],
 		context = canvas.getContext('2d'),
 		video = $('video', booth)[0],
-		button = $('button', booth);
 	
 	navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia
 	window.URL = window.URL || window.mozURL || window.webkitURL;
@@ -70,7 +69,7 @@ Meteor.startup(function() {
 	});
 
 	// Trigger photo take
-	button.click(function() {
+	booth.click(function() {
 		context.drawImage(video, 0, 0, 160, 120);
 		Photos.insert({url: canvas.toDataURL(), created: new Date().getTime()});
 	});

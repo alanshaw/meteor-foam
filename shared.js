@@ -1,1 +1,1 @@
-var Photos = new Meteor.Collection('photos');
+Photos = new Meteor.Collection('photos');

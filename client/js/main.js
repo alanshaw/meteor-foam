@@ -2,7 +2,8 @@ Meteor.startup(function() {
 	
 	var canvas = $('#booth canvas')[0],
 		context = canvas.getContext('2d'),
-		video = $('#booth video')[0];
+		video = $('#booth video')[0],
+		button = $('#booth button');
 	
 	navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia
 	window.URL = window.URL || window.mozURL || window.webkitURL;
@@ -14,6 +15,7 @@ Meteor.startup(function() {
 	navigator.getUserMedia({'video': true}, function(stream) {
 		video.src = window.URL.createObjectURL(stream);
 		video.play();
+		button.show();
 	}, function(err) {
 		console.error('Video capture error', err); 
 	});
@@ -23,6 +25,8 @@ Meteor.startup(function() {
 		if(err) {
 			return console.error('failed to count the photos', err);
 		}
+		
+		console.log(count, 'photos available');
 		
 		// Retrieve photos in 5 item chunks
 		var limit = 5;
@@ -60,7 +64,7 @@ Meteor.startup(function() {
 	});
 
 	// Trigger photo take
-	$('#booth button').click(function() {
+	button.hide().click(function() {
 		context.drawImage(video, 0, 0, 160, 120);
 		Photos.insert({url: canvas.toDataURL(), created: new Date().getTime()});
 	});

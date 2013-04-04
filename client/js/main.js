@@ -93,7 +93,7 @@ function renderPhotos() {
 	
 	var data = photos.map(function(photo) {
 		// Provide default created value for legacy photos, also divide by 1000000 because of https://github.com/mbostock/d3/issues/1075
-		return {_id: photo._id, url: photo.url, value: (photo.created || 1365080502355) / 1000000};
+		return {_id: photo._id, url: photo.url, value: getValue(photo.created || 1365080502355)};
 	});
 	
 	var photo = svg.selectAll('.photo')
@@ -131,6 +131,37 @@ function renderPhotos() {
 	photoExit.select('image')
 		.attr('width', 0)
 		.attr('height', 0);
+}
+
+function getValue(time) {
+	
+	var fiveSeconds = 5000;
+	var fifteenSeconds = fiveSeconds * 3;
+	var thirtySeconds = fifteenSeconds * 2;
+	var oneMinute = thirtySeconds * 2;
+	var fiveMinutes = oneMinute * 5;
+	var fifteenMinutes = fiveMinutes * 3;
+	var thirtyMinutes = fifteenMinutes * 2;
+	
+	var now = Date.now();
+	
+	if(time > now - fiveSeconds) {
+		return 100; 
+	} else if(time > now - fifteenSeconds) {
+		return 75;
+	} else if(time > now - thirtySeconds) {
+		return 50;
+	} else if(time > now - oneMinute) {
+		return 35;
+	} else if(time > now - fiveMinutes) {
+		return 20;
+	} else if(time > now - fifteenMinutes) {
+		return 10;
+	} else if(time > now - thirtyMinutes) {
+		return 5;
+	}
+	
+	return 1;
 }
 
 function removeAllPhotos() {

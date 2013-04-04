@@ -169,7 +169,7 @@ function getValue(time) {
 	return 1;
 }
 
-function removeAllPhotos() {
+window.removeAllPhotos = function() {
 	Photos.find().forEach(function(photo) {
 		Photos.remove(photo._id);
 	});

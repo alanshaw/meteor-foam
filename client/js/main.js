@@ -131,30 +131,39 @@ function renderPhotos() {
 
 function getValue(time) {
 	
-	var fifteenSeconds = 15000;
-	var thirtySeconds = fifteenSeconds * 2;
-	var oneMinute = thirtySeconds * 2;
-	var fiveMinutes = oneMinute * 5;
-	var fifteenMinutes = fiveMinutes * 3;
-	var thirtyMinutes = fifteenMinutes * 2;
-	var oneHour = thirtyMinutes * 2;
+	var fifteenSeconds = 15000,
+		thirtySeconds = fifteenSeconds * 2,
+		oneMinute = thirtySeconds * 2,
+		fiveMinutes = oneMinute * 5,
+		fifteenMinutes = fiveMinutes * 3,
+		thirtyMinutes = fifteenMinutes * 2,
+		oneHour = thirtyMinutes * 2,
+		fiveHours = oneHour * 5,
+		fifteenHours = fiveHours * 3,
+		thirtyHours = fifteenHours * 2;
 	
 	var now = Date.now();
 	
 	if(time > now - fifteenSeconds) {
-		return 100;
+		return 110;
 	} else if(time > now - thirtySeconds) {
-		return 75;
+		return 85;
 	} else if(time > now - oneMinute) {
-		return 50;
+		return 60;
 	} else if(time > now - fiveMinutes) {
-		return 35;
+		return 45;
 	} else if(time > now - fifteenMinutes) {
-		return 20;
+		return 30;
 	} else if(time > now - thirtyMinutes) {
-		return 10;
+		return 20;
 	} else if(time > now - oneHour) {
+		return 15;
+	} else if(time > now - fiveHours) {
+		return 10;
+	} else if(time > now - fifteenHours) {
 		return 5;
+	} else if(time > now - thirtyHours) {
+		return 2;
 	}
 	
 	return 1;

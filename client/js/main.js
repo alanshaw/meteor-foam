@@ -34,6 +34,7 @@ Meteor.startup(function() {
 		
 		// Retrieve photos in chunks
 		var limit = 1;
+		var increment = 5;
 		var subscriptons = [];
 		
 		(function bufferedSubscribe() {
@@ -45,7 +46,8 @@ Meteor.startup(function() {
 					console.log('Got first ' + limit + ' photos!');
 					
 					if(limit < count) {
-						limit += 1;
+						limit += increment;
+						increment = increment >= 15 ? 15 : increment + 5;
 					} else {
 						limit = 1000000;
 					}

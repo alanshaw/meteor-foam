@@ -90,7 +90,7 @@ function renderPhotos() {
 	var photoEnter = photo.enter()
 		.append('g')
 		.attr('class', 'photo')
-		.attr('transform', function(d) { return 'translate(' + width / 2 + ', ' + height / 2 + ')'; })
+		.attr('transform', 'translate(' + (width / 2) + ', ' + (height / 2) + ')')
 	
 	photoEnter.append('image')
 		.attr('xlink:href', function(d) { return d.url; })
@@ -102,4 +102,17 @@ function renderPhotos() {
 	photoUpdate.select('image')
 		.attr('width', function(d) { return d.r * 2; })
 		.attr('height', function(d) { return d.r * 2; });
+	
+	var photoExit = photo.exit()
+		.attr('transform', 'translate(' + (width / 2) + ', ' + (height / 2) + ')');
+	
+	photoExit.select('image')
+		.attr('width', 0)
+		.attr('height', 0);
+}
+
+function removeAllPhotos() {
+	Photos.find().forEach(function(photo) {
+		Photos.remove(photo._id);
+	});
 }

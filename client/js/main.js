@@ -3,8 +3,7 @@ Meteor.startup(function() {
 	var booth = $('#booth'),
 		canvas = $('canvas', booth)[0],
 		context = canvas.getContext('2d'),
-		video = $('video', booth)[0],
-		button = $('button', booth);
+		video = $('video', booth)[0]
 	
 	navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia
 	window.URL = window.URL || window.mozURL || window.webkitURL;
@@ -70,7 +69,7 @@ Meteor.startup(function() {
 	});
 
 	// Trigger photo take
-	button.click(function() {
+	booth.click(function() {
 		context.drawImage(video, 0, 0, 160, 120);
 		Photos.insert({url: canvas.toDataURL(), created: new Date().getTime()});
 	});
@@ -103,6 +102,7 @@ function renderPhotos() {
 		.append('g')
 		.attr('class', 'photo')
 		.attr('transform', 'translate(' + (width / 2) + ', ' + (height / 2) + ')')
+		.on("click", function(d) { Photos.remove(d._id); });
 	
 	photoEnter.append('clipPath')
 		.attr('id', function(d) { return 'cp-' + d._id; })
@@ -125,12 +125,8 @@ function renderPhotos() {
 		.attr('cx', function(d){ return d.r; })
 		.attr('cy', function(d){ return d.r; });
 	
-	var photoExit = photo.exit()
-		.attr('transform', 'translate(' + (width / 2) + ', ' + (height / 2) + ')');
-	
-	photoExit.select('image')
-		.attr('width', 0)
-		.attr('height', 0);
+	var photoExit = photo.exit();
+	photoExit.transition().remove().select('circle').attr('r', 0);
 }
 
 function getValue(time) {

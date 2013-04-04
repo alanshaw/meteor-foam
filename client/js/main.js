@@ -94,11 +94,9 @@ function renderPhotos() {
 		.attr('class', 'photo')
 		.attr('transform', 'translate(' + (width / 2) + ', ' + (height / 2) + ')')
 	
-	/*
 	photoEnter.append('clipPath')
 		.attr('id', function(d) { return 'cp-' + d._id; })
 		.append('circle');
-	*/
 	
 	photoEnter.append('image')
 		.attr('xlink:href', function(d) { return d.url; })
@@ -112,12 +110,10 @@ function renderPhotos() {
 		.attr('width', function(d) { return d.r * 2; })
 		.attr('height', function(d) { return d.r * 2; });
 	
-	/*
 	photoUpdate.select('circle')
 		.attr('r', function(d){ return d.r; })
 		.attr('cx', function(d){ return d.r; })
 		.attr('cy', function(d){ return d.r; });
-	*/
 	
 	var photoExit = photo.exit()
 		.attr('transform', 'translate(' + (width / 2) + ', ' + (height / 2) + ')');

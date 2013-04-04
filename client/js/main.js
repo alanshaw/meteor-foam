@@ -104,7 +104,7 @@ function renderPhotos() {
 		.attr('clip-path', function(d) { return 'url(#cp-' + d._id + ')'; });
 	
 	var photoUpdate = photo.transition()
-		.attr('transform', function(d) { return 'translate(' + d.x + ', ' + d.y + ')'; });
+		.attr('transform', function(d) { return 'translate(' + (d.x - d.r) + ', ' + (d.y - d.r) + ')'; });
 	
 	photoUpdate.select('image')
 		.attr('width', function(d) { return d.r * 2; })

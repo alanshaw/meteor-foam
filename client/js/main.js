@@ -1,4 +1,6 @@
 Meteor.startup(function() {
+
+	audio();
 	
 	var booth = $('#booth'),
 		canvas = $('canvas', booth)[0],
@@ -73,7 +75,15 @@ Meteor.startup(function() {
 		context.drawImage(video, 0, 0, 160, 120);
 		Photos.insert({url: canvas.toDataURL(), created: Date.now()});
 	});
+
+	
 });
+
+audio = function audio(){
+	audio.foam = new buzz.sound( "/audio/foam", { formats: [ "ogg", "mp3" ] }).setVolume(20);
+	audio.burst = new buzz.sound( "/audio/burst", { formats: [ "ogg", "mp3" ] }).setVolume(20);
+	buzz.all().load();
+};
 
 function renderPhotos() {
 	
@@ -94,14 +104,24 @@ function renderPhotos() {
 		return {_id: photo._id, url: photo.url, value: getValue(photo.created)};
 	});
 	
-	var photo = svg.selectAll('.photo')
+	var photo = svg.selectAll('g')
 		.data(layout.nodes({children: data}).filter(function(d) {return !d.children;}), function(d) {return d._id;});
 	
 	var photoEnter = photo.enter()
 		.append('g')
 		.attr('class', 'photo')
 		.attr('transform', 'translate(' + (width / 2) + ', ' + (height / 2) + ')')
-		.on("click", function(d) { Photos.remove(d._id); });
+		.on("click", function(d) { 
+			Photos.remove(d._id); 
+			audio.burst.stop(); 
+			audio.burst.play();
+		}).call(function(selection){
+			console.log("call", selection);
+			for(var i = 0; i < selection.length; i++){
+				audio.foam.stop();
+				audio.foam.play();
+			}
+		});
 	
 	photoEnter.append('clipPath')
 		.attr('id', function(d) { return 'cp-' + d._id; })

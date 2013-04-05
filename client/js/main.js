@@ -129,42 +129,42 @@ function renderPhotos() {
 	photoExit.transition().remove().select('circle').attr('r', 0);
 }
 
+// Time ranges in millis for getValue
+var fifteenSeconds = 15000,
+	thirtySeconds = fifteenSeconds * 2,
+	oneMinute = thirtySeconds * 2,
+	fiveMinutes = oneMinute * 5,
+	fifteenMinutes = fiveMinutes * 3,
+	thirtyMinutes = fifteenMinutes * 2,
+	oneHour = thirtyMinutes * 2,
+	fiveHours = oneHour * 5,
+	fifteenHours = fiveHours * 3,
+	thirtyHours = fifteenHours * 2;
+
 function getValue(time) {
-	
-	var fifteenSeconds = 15000,
-		thirtySeconds = fifteenSeconds * 2,
-		oneMinute = thirtySeconds * 2,
-		fiveMinutes = oneMinute * 5,
-		fifteenMinutes = fiveMinutes * 3,
-		thirtyMinutes = fifteenMinutes * 2,
-		oneHour = thirtyMinutes * 2,
-		fiveHours = oneHour * 5,
-		fifteenHours = fiveHours * 3,
-		thirtyHours = fifteenHours * 2;
 	
 	var now = Date.now();
 	
-	if(time > now - fifteenSeconds) {
+	if(time > now - fifteenSeconds)
 		return 110;
-	} else if(time > now - thirtySeconds) {
+	if(time > now - thirtySeconds)
 		return 85;
-	} else if(time > now - oneMinute) {
+	if(time > now - oneMinute)
 		return 60;
-	} else if(time > now - fiveMinutes) {
+	if(time > now - fiveMinutes)
 		return 45;
-	} else if(time > now - fifteenMinutes) {
+	if(time > now - fifteenMinutes)
 		return 30;
-	} else if(time > now - thirtyMinutes) {
+	if(time > now - thirtyMinutes)
 		return 20;
-	} else if(time > now - oneHour) {
+	if(time > now - oneHour)
 		return 15;
-	} else if(time > now - fiveHours) {
+	if(time > now - fiveHours)
 		return 10;
-	} else if(time > now - fifteenHours) {
+	if(time > now - fifteenHours)
 		return 5;
-	} else if(time > now - thirtyHours) {
+	if(time > now - thirtyHours)
 		return 2;
-	}
 	
 	return 1;
 }

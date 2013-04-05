@@ -3,7 +3,7 @@ Meteor.startup(function() {
 	var booth = $('#booth'),
 		canvas = $('canvas', booth)[0],
 		context = canvas.getContext('2d'),
-		video = $('video', booth)[0]
+		video = $('video', booth)[0];
 	
 	navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia
 	window.URL = window.URL || window.mozURL || window.webkitURL;
@@ -12,7 +12,7 @@ Meteor.startup(function() {
 		console.warn('Set media.navigator.enabled to true in about:config to make mozGetUserMedia work. If it is already working, woo for you.');
 	}
 	
-	// Only show the booth when the user has accepted the consequences
+	// Only show the booth when the user has allowed webcam use
 	booth.hide();
 	
 	navigator.getUserMedia({'video': true}, function(stream) {
@@ -33,7 +33,7 @@ Meteor.startup(function() {
 		
 		// Retrieve photos in chunks
 		var limit = 1;
-		var increment = 5;
+		var chunkSize = 5;
 		var subscriptons = [];
 		
 		(function bufferedSubscribe() {
@@ -45,8 +45,8 @@ Meteor.startup(function() {
 					console.log('Got first ' + limit + ' photos!');
 					
 					if(limit < count) {
-						limit += increment;
-						increment = increment >= 15 ? 15 : increment + 5;
+						limit += chunkSize;
+						chunkSize = chunkSize >= 15 ? 15 : chunkSize + 5;
 					} else {
 						limit = 1000000;
 					}
@@ -71,7 +71,7 @@ Meteor.startup(function() {
 	// Trigger photo take
 	booth.click(function() {
 		context.drawImage(video, 0, 0, 160, 120);
-		Photos.insert({url: canvas.toDataURL(), created: new Date().getTime()});
+		Photos.insert({url: canvas.toDataURL(), created: Date.now()});
 	});
 });
 
@@ -91,8 +91,7 @@ function renderPhotos() {
 	var layout = d3.layout.pack().sort(d3.descending).size([width, height]);
 	
 	var data = photos.map(function(photo) {
-		// Provide default created value for legacy photos, also divide by 1000000 because of https://github.com/mbostock/d3/issues/1075
-		return {_id: photo._id, url: photo.url, value: getValue(photo.created || 1365080502355)};
+		return {_id: photo._id, url: photo.url, value: getValue(photo.created)};
 	});
 	
 	var photo = svg.selectAll('.photo')
@@ -167,10 +166,4 @@ function getValue(time) {
 		return 2;
 	
 	return 1;
-}
-
-window.removeAllPhotos = function() {
-	Photos.find().forEach(function(photo) {
-		Photos.remove(photo._id);
-	});
 }

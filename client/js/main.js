@@ -16,7 +16,7 @@ Meteor.startup(function() {
 	booth.hide();
 	
 	navigator.getUserMedia({'video': true}, function(stream) {
-		video.src = window.URL.createObjectURL(stream);
+		video.src = window.opera ? stream : window.URL.createObjectURL(stream);
 		video.play();
 		booth.show();
 	}, function(err) {

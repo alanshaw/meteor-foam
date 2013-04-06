@@ -13,10 +13,6 @@ Meteor.startup(function() {
 		navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
 		window.URL = window.URL || window.mozURL || window.webkitURL;
 		
-		if(navigator.mozGetUserMedia) {
-			console.warn('Set media.navigator.enabled to true in about:config to make mozGetUserMedia work. If it is already working, woo for you.');
-		}
-		
 		navigator.getUserMedia({'video': true}, function(stream) {
 			video.src = window.opera ? stream : window.URL.createObjectURL(stream);
 			video.play();

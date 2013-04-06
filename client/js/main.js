@@ -5,23 +5,29 @@ Meteor.startup(function() {
 		context = canvas.getContext('2d'),
 		video = $('video', booth)[0];
 	
-	navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
-	window.URL = window.URL || window.mozURL || window.webkitURL;
-	
-	if(navigator.mozGetUserMedia) {
-		console.warn('Set media.navigator.enabled to true in about:config to make mozGetUserMedia work. If it is already working, woo for you.');
-	}
-	
 	// Only show the booth when the user has allowed webcam use
 	booth.hide();
 	
-	navigator.getUserMedia({'video': true}, function(stream) {
-		video.src = window.opera ? stream : window.URL.createObjectURL(stream);
-		video.play();
-		booth.show();
-	}, function(err) {
-		console.error('Video capture error', err); 
-	});
+	try {
+		
+		navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
+		window.URL = window.URL || window.mozURL || window.webkitURL;
+		
+		if(navigator.mozGetUserMedia) {
+			console.warn('Set media.navigator.enabled to true in about:config to make mozGetUserMedia work. If it is already working, woo for you.');
+		}
+		
+		navigator.getUserMedia({'video': true}, function(stream) {
+			video.src = window.opera ? stream : window.URL.createObjectURL(stream);
+			video.play();
+			booth.show();
+		}, function(err) {
+			console.error('Video capture error', err); 
+		});
+		
+	} catch(err) {
+		console.log('navigator.getUserMedia error', err);
+	}
 	
 	// Get the total count of the photos on the server so we can begin retrieving them
 	Meteor.call('photosCount', function(err, count) {
@@ -64,9 +70,7 @@ Meteor.startup(function() {
 	});
 	
 	// Do some d3 when the Photos collection changes.
-	Deps.autorun(function() {
-		renderPhotos();
-	});
+	Deps.autorun(renderPhotos);
 	
 	// Trigger photo take
 	booth.click(function() {

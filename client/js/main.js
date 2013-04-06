@@ -36,7 +36,7 @@ Meteor.startup(function() {
 		var chunkSize = 5;
 		var subscriptons = [];
 		
-		(function bufferedSubscribe() {
+		(function chunkedSubscribe() {
 			
 			subscriptons.push(
 				Meteor.subscribe('photos', limit, function() {
@@ -51,7 +51,7 @@ Meteor.startup(function() {
 						limit = 1000000;
 					}
 					
-					bufferedSubscribe();
+					chunkedSubscribe();
 					
 					// Remove the previous subscription
 					if(subscriptons.length) {
@@ -97,8 +97,23 @@ function renderPhotos() {
 	
 	var layout = d3.layout.pack().sort(d3.descending).size([width, height]);
 	
+	var minCreated = Date.now();
+	var maxCreated = 0;
+	
+	photos.forEach(function(photo) {
+		if(photo.created < minCreated) {
+			minCreated = photo.created;
+		}
+		if(photo.created > maxCreated) {
+			maxCreated = photo.created;
+		}
+	});
+	
+	// Create the scale
+	var scale = d3.scale.linear().domain([minCreated, maxCreated]).range([1, photos.length]);
+	
 	var data = photos.map(function(photo) {
-		return {_id: photo._id, url: photo.url, value: getValue(photo.created)};
+		return {_id: photo._id, url: photo.url, value: scale(photo.created)};
 	});
 	
 	var photo = svg.selectAll('g')
@@ -142,44 +157,4 @@ function renderPhotos() {
 	});
 	
 	photoExit.transition().remove().select('circle').attr('r', 0);
-}
-
-// Time ranges in millis for getValue
-var fifteenSeconds = 15000,
-	thirtySeconds = fifteenSeconds * 2,
-	oneMinute = thirtySeconds * 2,
-	fiveMinutes = oneMinute * 5,
-	fifteenMinutes = fiveMinutes * 3,
-	thirtyMinutes = fifteenMinutes * 2,
-	oneHour = thirtyMinutes * 2,
-	fiveHours = oneHour * 5,
-	fifteenHours = fiveHours * 3,
-	thirtyHours = fifteenHours * 2;
-
-function getValue(time) {
-	
-	var now = Date.now();
-	
-	if(time > now - fifteenSeconds)
-		return 110;
-	if(time > now - thirtySeconds)
-		return 85;
-	if(time > now - oneMinute)
-		return 60;
-	if(time > now - fiveMinutes)
-		return 45;
-	if(time > now - fifteenMinutes)
-		return 30;
-	if(time > now - thirtyMinutes)
-		return 20;
-	if(time > now - oneHour)
-		return 15;
-	if(time > now - fiveHours)
-		return 10;
-	if(time > now - fifteenHours)
-		return 5;
-	if(time > now - thirtyHours)
-		return 2;
-	
-	return 1;
 }

@@ -1,13 +1,11 @@
 Meteor.startup(function() {
-
-	audio();
 	
 	var booth = $('#booth'),
 		canvas = $('canvas', booth)[0],
 		context = canvas.getContext('2d'),
 		video = $('video', booth)[0];
 	
-	navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia
+	navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
 	window.URL = window.URL || window.mozURL || window.webkitURL;
 	
 	if(navigator.mozGetUserMedia) {
@@ -64,26 +62,25 @@ Meteor.startup(function() {
 			
 		})();
 	});
-
+	
 	// Do some d3 when the Photos collection changes.
-	Deps.autorun(function(){
+	Deps.autorun(function() {
 		renderPhotos();
 	});
-
+	
 	// Trigger photo take
 	booth.click(function() {
 		context.drawImage(video, 0, 0, 160, 120);
 		Photos.insert({url: canvas.toDataURL(), created: Date.now()});
 	});
-
-	
 });
 
-audio = function audio(){
-	audio.foam = new buzz.sound( "/audio/foam", { formats: [ "ogg", "mp3" ] }).setVolume(20);
-	audio.burst = new buzz.sound( "/audio/burst", { formats: [ "ogg", "mp3" ] }).setVolume(20);
+var audio = (function audio() {
+	audio.foam = new buzz.sound( "/audio/foam", { formats: [ "ogg", "mp3" ] }).setVolume(80);
+	audio.burst = new buzz.sound( "/audio/burst", { formats: [ "ogg", "mp3" ] }).setVolume(80);
 	buzz.all().load();
-};
+	return audio;
+})();
 
 function renderPhotos() {
 	
@@ -111,16 +108,10 @@ function renderPhotos() {
 		.append('g')
 		.attr('class', 'photo')
 		.attr('transform', 'translate(' + (width / 2) + ', ' + (height / 2) + ')')
-		.on("click", function(d) { 
-			Photos.remove(d._id); 
-			audio.burst.stop(); 
-			audio.burst.play();
-		}).call(function(selection){
-			console.log("call", selection);
-			for(var i = 0; i < selection.length; i++){
-				audio.foam.stop();
-				audio.foam.play();
-			}
+		.on('click', function(d) {
+			Photos.remove(d._id);
+		}).call(function() {
+			audio.foam.stop().play();
 		});
 	
 	photoEnter.append('clipPath')
@@ -145,6 +136,11 @@ function renderPhotos() {
 		.attr('cy', function(d){ return d.r; });
 	
 	var photoExit = photo.exit();
+	
+	photoExit.call(function(selection) {
+		if(!selection.empty()) audio.burst.stop().play();
+	});
+	
 	photoExit.transition().remove().select('circle').attr('r', 0);
 }
 

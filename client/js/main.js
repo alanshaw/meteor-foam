@@ -125,8 +125,8 @@ function renderPhotos() {
 		.attr('transform', 'translate(' + (width / 2) + ', ' + (height / 2) + ')')
 		.on('click', function(d) {
 			Photos.remove(d._id);
-		}).call(function() {
-			audio.foam.stop().play();
+		}).call(function(selection) {
+			if(!selection.empty()) audio.foam.stop().play();
 		});
 	
 	photoEnter.append('clipPath')

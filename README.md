@@ -9,4 +9,4 @@ Photos are stored in a [Meteor](http://meteor.com) collection in [data URI](http
 
 * * *
 
-N.B. You'll need to use an up to date Chrome, Firefox or Opera. NOTE if using Firefox you must first enable getUserMedia by setting media.navigator.enabled to true in about:config.
+N.B. You'll need to use an up to date Chrome, Firefox or Opera.

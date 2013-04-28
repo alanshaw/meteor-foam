@@ -67,6 +67,8 @@ Meteor.startup(function() {
 	
 	// Do some d3 when the Photos collection changes.
 	Deps.autorun(renderPhotos);
+	$(window).resize(renderPhotos);
+	window.addEventListener("deviceorientation", handleOrientation, true);
 	
 	// Trigger photo take
 	booth.click(function() {
@@ -82,6 +84,10 @@ var audio = (function audio() {
 	return audio;
 })();
 
+function handleOrientation(event){
+	console.log(event);
+}
+
 function renderPhotos() {
 	
 	var photos = Photos.find().fetch();
@@ -95,8 +101,6 @@ function renderPhotos() {
 		.attr('width', width)
 		.attr('height', height);
 	
-	var layout = d3.layout.pack().sort(d3.descending).size([width, height]);
-	
 	var minCreated = Date.now();
 	var maxCreated = 0;
 	
@@ -108,16 +112,21 @@ function renderPhotos() {
 			maxCreated = photo.created;
 		}
 	});
-	
+
 	// Create the scale
 	var scale = d3.scale.linear().domain([minCreated, maxCreated]).range([1, photos.length]);
 	
 	var data = photos.map(function(photo) {
-		return {_id: photo._id, url: photo.url, value: scale(photo.created)};
+		return {_id: photo._id, url: photo.url, r: scale(photo.created)};
 	});
-	
-	var photo = svg.selectAll('g')
-		.data(layout.nodes({children: data}).filter(function(d) {return !d.children;}), function(d) {return d._id;});
+
+	var layout = d3.layout.force()
+		.nodes(data)
+		.gravity(100)
+		.size([width, height])
+		.start();
+
+	var photo = svg.selectAll('g').data(data, function(d) {return d._id;});
 	
 	var photoEnter = photo.enter()
 		.append('g')

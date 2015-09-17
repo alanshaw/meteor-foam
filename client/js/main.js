@@ -66,7 +66,7 @@ Meteor.startup(function() {
 	});
 	
 	// Do some d3 when the Photos collection changes.
-	Deps.autorun(renderPhotos);
+	Tracker.autorun(renderPhotos);
 	
 	// Trigger photo take
 	booth.click(function() {

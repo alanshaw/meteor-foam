@@ -1,1 +1,1 @@
-Photos = new Meteor.Collection('photos');
+Photos = new Mongo.Collection('photos');
